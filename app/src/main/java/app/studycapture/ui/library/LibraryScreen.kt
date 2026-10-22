@@ -94,8 +94,7 @@ fun LibraryScreen(
         if (state.unfinished.isNotEmpty()) {
             item { Overline(stringResource(R.string.library_unfinished), Modifier.padding(top = 8.dp)) }
             items(state.unfinished, key = { "u-" + it.id }) { m ->
-                val processing = m.status == MaterialStatus.PROCESSING
-                StudyCard(onClick = { onOpenUnfinished(m.id, processing) }) {
+                StudyCard(onClick = { onOpenUnfinished(m.id, m.status != MaterialStatus.NEEDS_REVIEW) }) {
                     Column {
                         Text(materialTitle(m.title), style = MaterialTheme.typography.titleMedium)
                         Text(

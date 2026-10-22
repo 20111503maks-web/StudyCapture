@@ -38,6 +38,7 @@ class ReviewViewModel(private val topicId: String?, private val study: StudyRepo
     val state: StateFlow<ReviewState> = _state.asStateFlow()
     private var shownAt = System.currentTimeMillis()
     private var saving = false
+    private var revealedAt = 0L
 
     init {
         load()
@@ -49,7 +50,14 @@ class ReviewViewModel(private val topicId: String?, private val study: StudyRepo
         }
     }
 
+    /** Reloads the queue when the tab is reopened, unless a card is in progress. */
+    fun refreshIfIdle() {
+        val s = _state.value
+        if (!s.loading && !s.revealed && (s.finished || s.index == 0)) load()
+    }
+
     fun reveal() {
+        revealedAt = System.currentTimeMillis()
         val card = _state.value.current ?: return
         val now = Instant.now()
         val options = study.preview(card.toSrs(), now).entries.sortedBy { it.key.value }.map { (rating, next) ->
@@ -64,9 +72,12 @@ class ReviewViewModel(private val topicId: String?, private val study: StudyRepo
         if (saving) return // ignore double taps: one answer per card
         saving = true
         val duration = System.currentTimeMillis() - shownAt
+        // The previewed schedule is reused so the label equals what is stored — unless the
+        // answer stayed open so long that "now" has moved on; then schedule afresh.
+        val previewed = option.next.takeIf { System.currentTimeMillis() - revealedAt < STALE_PREVIEW_MS }
         viewModelScope.launch {
             try {
-                study.review(card.id, option.rating, option.next, duration)
+                study.review(card.id, option.rating, previewed, duration)
             } finally {
                 saving = false
             }
@@ -79,5 +90,9 @@ class ReviewViewModel(private val topicId: String?, private val study: StudyRepo
             )
             shownAt = System.currentTimeMillis()
         }
+    }
+
+    private companion object {
+        const val STALE_PREVIEW_MS = 10 * 60 * 1000L
     }
 }

@@ -15,6 +15,11 @@ class CaptureViewModel(private val capture: CaptureRepository) : ViewModel() {
     /** Emits the id of each newly created material. */
     val imported = _imported.receiveAsFlow()
 
+    /** Activity-scoped, so rotation cannot cancel a half-finished import. */
+    fun importText(text: String) {
+        viewModelScope.launch { _imported.send(capture.importText(text)) }
+    }
+
     fun importImages(uris: List<Uri>, fromScanner: Boolean) {
         viewModelScope.launch {
             val id = capture.importImages(uris, if (fromScanner) SourceType.CAMERA else SourceType.GALLERY)

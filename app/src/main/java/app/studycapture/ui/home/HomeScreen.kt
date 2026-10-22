@@ -93,7 +93,6 @@ private fun Dashboard(
         item { DueCard(state.dueCount) { onReview(null) } }
         state.unfinished.firstOrNull()?.let { m ->
             item {
-                val processing = m.status == MaterialStatus.PROCESSING
                 MaterialLink(
                     overline = stringResource(R.string.home_continue),
                     material = m,
@@ -104,7 +103,7 @@ private fun Dashboard(
                             else -> R.string.home_needs_check
                         },
                     ),
-                    onClick = { if (processing) onProcessing(m.id) else onContinue(m.id) },
+                    onClick = { if (m.status == MaterialStatus.NEEDS_REVIEW) onContinue(m.id) else onProcessing(m.id) },
                 )
             }
         }

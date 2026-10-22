@@ -3,6 +3,7 @@ package app.studycapture.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import app.studycapture.R
+import app.studycapture.processing.MaterialProcessor
 import app.studycapture.understanding.SubjectCatalog
 
 /** Materials start without a title until a heading is found; never show an empty title. */
@@ -28,6 +29,17 @@ fun subjectLabel(key: String): String {
     }
     return res?.let { stringResource(it) } ?: key
 }
+
+/** Page errors are stored as codes (MaterialProcessor.ERROR_*); show them in the UI language. */
+@Composable
+fun pageErrorText(code: String?): String = stringResource(
+    when (code) {
+        MaterialProcessor.ERROR_MEMORY -> R.string.page_error_memory
+        MaterialProcessor.ERROR_UNREADABLE -> R.string.page_error_unreadable
+        MaterialProcessor.ERROR_NO_CYRILLIC -> R.string.check_no_cyrillic
+        else -> R.string.page_error_generic
+    },
+)
 
 /** Catalog subjects, localized, for the subject picker. */
 @Composable

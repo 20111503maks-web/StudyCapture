@@ -6,7 +6,10 @@ import app.studycapture.data.db.MaterialRow
 import app.studycapture.data.db.WeakTopicRow
 import app.studycapture.data.repo.LibraryRepository
 import app.studycapture.data.repo.StudyRepository
+import app.studycapture.ui.minuteTicker
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -28,6 +31,7 @@ data class HomeState(
     val isFirstRun get() = !loading && readyCount == 0 && unfinished.isEmpty()
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(library: LibraryRepository, study: StudyRepository) : ViewModel() {
     private val now = System.currentTimeMillis()
     private val weekAgo = now - TimeUnit.DAYS.toMillis(7)
@@ -35,7 +39,7 @@ class HomeViewModel(library: LibraryRepository, study: StudyRepository) : ViewMo
 
     val state: StateFlow<HomeState> = combine(
         library.observeReadyCount(),
-        study.observeDueCount(now),
+        minuteTicker().flatMapLatest { study.observeDueCount() },
         library.observeUnfinished(),
         library.observeMaterials(limit = 1),
         combine(study.observeWeakTopic(twoWeeksAgo), study.observeReviewTimes(weekAgo)) { weak, times -> weak to times },

@@ -25,6 +25,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -46,6 +48,10 @@ fun ReviewScreen(
 ) {
     val vm = appViewModel { ReviewViewModel(topicId, it.study) }
     val state by vm.state.collectAsStateWithLifecycle()
+    LifecycleResumeEffect(Unit) {
+        vm.refreshIfIdle()
+        onPauseOrDispose { }
+    }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(stringResource(R.string.nav_review), style = MaterialTheme.typography.headlineLarge)
@@ -80,20 +86,23 @@ private fun Session(
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Surface(
-            modifier = Modifier.fillMaxWidth().height(340.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        ) {
-            Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-                Text(card.front, style = MaterialTheme.typography.headlineSmall)
-                AnimatedVisibility(state.revealed, enter = fadeIn() + expandVertically()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        Text(card.back, style = MaterialTheme.typography.bodyLarge)
-                        if (card.pageId != null) {
-                            SourceChip(stringResource(R.string.review_source), { onOpenSource(card.materialId, card.pageId, card.blockIndex) })
+        // A fresh card composable per card: the old answer must never animate into the next card.
+        key(card.id) {
+            Surface(
+                modifier = Modifier.fillMaxWidth().height(340.dp),
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            ) {
+                Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                    Text(card.front, style = MaterialTheme.typography.headlineSmall)
+                    AnimatedVisibility(state.revealed, enter = fadeIn() + expandVertically()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            Text(card.back, style = MaterialTheme.typography.bodyLarge)
+                            if (card.pageId != null) {
+                                SourceChip(stringResource(R.string.review_source), { onOpenSource(card.materialId, card.pageId, card.blockIndex) })
+                            }
                         }
                     }
                 }

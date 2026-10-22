@@ -2,6 +2,7 @@ package app.studycapture.ocr
 
 import android.graphics.Bitmap
 import app.studycapture.model.OcrLine
+import kotlinx.coroutines.CancellationException
 
 data class OcrResult(
     val lines: List<OcrLine>,
@@ -24,7 +25,13 @@ class OcrRouter(
         if (!cyrillicEnabled) return OcrResult(latinLines, latin.id)
         if (!cyrillic.isAvailable()) return OcrResult(latinLines, latin.id, cyrillicUnavailable = true)
 
-        val cyrillicLines = cyrillic.recognize(bitmap)
+        val cyrillicLines = try {
+            cyrillic.recognize(bitmap)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return OcrResult(latinLines, latin.id) // keep the Latin result rather than failing the page
+        }
         val ratio = cyrillicRatio(cyrillicLines.joinToString(" ") { it.text })
         return if (ratio >= CYRILLIC_SHARE) OcrResult(cyrillicLines, cyrillic.id) else OcrResult(latinLines, latin.id)
     }

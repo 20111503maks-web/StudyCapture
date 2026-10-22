@@ -42,6 +42,8 @@ import app.studycapture.ui.materialTitle
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import app.studycapture.ui.minuteTicker
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -51,10 +53,11 @@ data class SubjectState(
     val materials: List<MaterialRow> = emptyList(),
 )
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class SubjectViewModel(private val subjectId: String, private val library: LibraryRepository) : ViewModel() {
     val state: StateFlow<SubjectState> = combine(
         library.observeSubject(subjectId),
-        library.observeTopics(subjectId, System.currentTimeMillis()),
+        minuteTicker().flatMapLatest { library.observeTopics(subjectId) },
         library.observeMaterials(subjectId),
     ) { s, t, m -> SubjectState(s, t, m) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SubjectState())

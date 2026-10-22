@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +55,7 @@ private enum class MaterialTab { PAGES, TEXT, SUMMARY }
 
 private data class SourceTarget(val pageId: String, val blockIndex: Int?)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialScreen(
     materialId: String,
@@ -71,6 +73,13 @@ fun MaterialScreen(
     var menu by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+
+    // Leave exactly once, whether the user deleted the material or its last page.
+    var closed by remember { mutableStateOf(false) }
+    val close: () -> Unit = { if (!closed) { closed = true; onDeleted() } }
+    LaunchedEffect(state.loaded, state.material) {
+        if (state.loaded && state.material == null) close()
+    }
 
     // Jump to the block a search hit or flashcard pointed at.
     LaunchedEffect(state.loaded, focusPageId, focusBlockIndex) {
@@ -134,7 +143,7 @@ fun MaterialScreen(
             title = stringResource(R.string.material_delete),
             body = stringResource(R.string.material_delete_body),
             confirmLabel = stringResource(R.string.action_delete),
-            onConfirm = { vm.deleteMaterial(onDeleted) },
+            onConfirm = { vm.deleteMaterial(close) },
             onDismiss = { confirmDelete = false },
         )
     }
@@ -150,7 +159,7 @@ private fun LazyListScope.pagesTab(state: MaterialState, onDeletePage: (String) 
             }
             val photo = page.processedPath ?: page.originalPath
             if (photo != null) {
-                PagePhoto(photo, null, Modifier.fillMaxWidth().height(420.dp))
+                PagePhoto(photo, null, Modifier.fillMaxWidth().height(420.dp), version = page.updatedAt)
             } else {
                 Text(stringResource(R.string.page_typed_text), style = MaterialTheme.typography.bodySmall)
             }

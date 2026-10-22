@@ -35,7 +35,7 @@ fun SourceSheet(page: PageEntity, pageNumber: Int, block: BlockEntity?, onDismis
             Text(stringResource(R.string.page_n, pageNumber), style = MaterialTheme.typography.titleLarge)
             val photo = page.processedPath ?: page.originalPath
             if (photo != null) {
-                PagePhoto(photo, block?.toModel()?.box, Modifier.fillMaxWidth().height(300.dp))
+                PagePhoto(photo, block?.toModel()?.box, Modifier.fillMaxWidth().height(300.dp), version = page.updatedAt)
             }
             if (block != null) {
                 Surface(

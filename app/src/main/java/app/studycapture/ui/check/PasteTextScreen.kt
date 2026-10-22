@@ -14,23 +14,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.studycapture.R
-import app.studycapture.ui.appContainer
 import app.studycapture.ui.components.ScreenHeader
-import kotlinx.coroutines.launch
 
+/** The import itself runs in the activity-scoped CaptureViewModel (see AppShell). */
 @Composable
-fun PasteTextScreen(onBack: () -> Unit, onCreated: (String) -> Unit) {
-    val container = appContainer()
-    val scope = rememberCoroutineScope()
+fun PasteTextScreen(onBack: () -> Unit, onSubmit: (String) -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
-    var busy by rememberSaveable { mutableStateOf(false) }
+    var busy by remember { mutableStateOf(false) }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().imePadding()) {
         ScreenHeader(stringResource(R.string.paste_title), onBack)
@@ -43,7 +40,7 @@ fun PasteTextScreen(onBack: () -> Unit, onCreated: (String) -> Unit) {
         Button(
             onClick = {
                 busy = true
-                scope.launch { onCreated(container.capture.importText(text)) }
+                onSubmit(text)
             },
             enabled = text.isNotBlank() && !busy,
             modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp),

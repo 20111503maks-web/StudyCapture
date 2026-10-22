@@ -50,11 +50,19 @@ interface StudyDao {
     @Query("SELECT * FROM flashcards WHERE materialId = :materialId AND status = 'ACTIVE'")
     suspend fun activeCards(materialId: String): List<FlashcardEntity>
 
+    /** Fronts the user already decided on (approved or discarded): never suggest them again. */
+    @Query("SELECT front FROM flashcards WHERE materialId = :materialId AND status != 'SUGGESTED'")
+    suspend fun decidedFronts(materialId: String): List<String>
+
+    @Query("SELECT COUNT(*) FROM flashcards WHERE materialId = :materialId AND status = 'SUGGESTED'")
+    suspend fun suggestedCount(materialId: String): Int
+
     @Query("DELETE FROM flashcards WHERE materialId = :materialId AND status = 'SUGGESTED'")
     suspend fun deleteSuggestions(materialId: String)
 
-    @Query("SELECT COUNT(*) FROM flashcards WHERE status = 'ACTIVE' AND dueAt <= :now")
-    fun observeDueCount(now: Long): Flow<Int>
+    /** Uses SQLite's clock so cards approved after subscribing are counted. */
+    @Query("SELECT COUNT(*) FROM flashcards WHERE status = 'ACTIVE' AND dueAt <= CAST(strftime('%s','now') AS INTEGER) * 1000")
+    fun observeDueCount(): Flow<Int>
 
     @Query(
         """

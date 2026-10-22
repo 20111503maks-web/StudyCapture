@@ -46,23 +46,20 @@ interface LibraryDao {
           (SELECT COUNT(*) FROM topics t WHERE t.subjectId = s.id) AS topicCount,
           (SELECT COUNT(*) FROM flashcards f JOIN materials m ON f.materialId = m.id
              JOIN topics t ON m.topicId = t.id
-             WHERE t.subjectId = s.id AND f.status = 'ACTIVE' AND f.dueAt <= :now) AS dueCount,
+             WHERE t.subjectId = s.id AND f.status = 'ACTIVE' AND f.dueAt <= CAST(strftime('%s','now') AS INTEGER) * 1000) AS dueCount,
           (SELECT m.title FROM materials m JOIN topics t ON m.topicId = t.id
              WHERE t.subjectId = s.id AND m.status = 'READY'
              ORDER BY m.createdAt DESC LIMIT 1) AS lastMaterialTitle
         FROM subjects s ORDER BY s.name COLLATE NOCASE
         """,
     )
-    fun observeSubjects(now: Long): Flow<List<SubjectSummaryRow>>
+    fun observeSubjects(): Flow<List<SubjectSummaryRow>>
 
     @Query("SELECT * FROM subjects ORDER BY name COLLATE NOCASE")
     suspend fun allSubjects(): List<SubjectEntity>
 
     @Query("SELECT * FROM subjects WHERE id = :id")
     fun observeSubject(id: String): Flow<SubjectEntity?>
-
-    @Query("SELECT * FROM subjects WHERE name = :name COLLATE NOCASE LIMIT 1")
-    suspend fun subjectByName(name: String): SubjectEntity?
 
     @Insert
     suspend fun insertSubject(subject: SubjectEntity)
@@ -84,14 +81,14 @@ interface LibraryDao {
         SELECT t.id, t.name,
           (SELECT COUNT(*) FROM materials m WHERE m.topicId = t.id AND m.status = 'READY') AS materialCount,
           (SELECT COUNT(*) FROM flashcards f JOIN materials m ON f.materialId = m.id
-             WHERE m.topicId = t.id AND f.status = 'ACTIVE' AND f.dueAt <= :now) AS dueCount
+             WHERE m.topicId = t.id AND f.status = 'ACTIVE' AND f.dueAt <= CAST(strftime('%s','now') AS INTEGER) * 1000) AS dueCount
         FROM topics t WHERE t.subjectId = :subjectId ORDER BY t.name COLLATE NOCASE
         """,
     )
-    fun observeTopics(subjectId: String, now: Long): Flow<List<TopicSummaryRow>>
+    fun observeTopics(subjectId: String): Flow<List<TopicSummaryRow>>
 
-    @Query("SELECT * FROM topics WHERE subjectId = :subjectId AND name = :name COLLATE NOCASE LIMIT 1")
-    suspend fun topicByName(subjectId: String, name: String): TopicEntity?
+    @Query("SELECT * FROM topics WHERE subjectId = :subjectId")
+    suspend fun topicsOf(subjectId: String): List<TopicEntity>
 
     @Insert
     suspend fun insertTopic(topic: TopicEntity)

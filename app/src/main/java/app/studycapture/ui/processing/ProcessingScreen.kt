@@ -56,6 +56,10 @@ import app.studycapture.ui.components.AppIcons
 import app.studycapture.ui.components.ScreenHeader
 import app.studycapture.ui.theme.StudyTheme
 import coil3.compose.AsyncImage
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import app.studycapture.ui.components.pageImageRequest
+import app.studycapture.ui.pageErrorText
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -88,8 +92,10 @@ fun ProcessingScreen(materialId: String, onBack: () -> Unit, onReady: () -> Unit
     val pages = state.pages
     val status = state.material?.status
 
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(status) {
-        if (status == MaterialStatus.NEEDS_REVIEW || status == MaterialStatus.READY) onReady()
+        val visible = lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        if (visible && (status == MaterialStatus.NEEDS_REVIEW || status == MaterialStatus.READY)) onReady()
     }
 
     val total = pages.size
@@ -115,14 +121,19 @@ fun ProcessingScreen(materialId: String, onBack: () -> Unit, onReady: () -> Unit
             PagePreview(current ?: pages.lastOrNull { it.processedPath != null } ?: pages.firstOrNull())
             Spacer(Modifier.height(16.dp))
             val pageLabel = if (current != null) stringResource(R.string.processing_page_of, current.pageIndex + 1, total) else null
-            Step(stringResource(R.string.stage_captured), stringResource(R.string.stage_captured_body, total), StepState.DONE.takeIf { total > 0 } ?: StepState.WAITING)
+            Step(stringResource(R.string.stage_captured), stringResource(R.string.stage_captured_body, pages.count { it.originalPath != null }), StepState.DONE.takeIf { total > 0 } ?: StepState.WAITING)
             Step(stringResource(R.string.stage_cleaning), stringResource(R.string.stage_cleaning_body), stepState(PageStage.CLEANING), pageLabel.takeIf { current?.stage == PageStage.CLEANING })
             Step(stringResource(R.string.stage_reading), stringResource(R.string.stage_reading_body), stepState(PageStage.READING), pageLabel.takeIf { current?.stage == PageStage.READING })
             Step(stringResource(R.string.stage_understanding), stringResource(R.string.stage_understanding_body), stepState(PageStage.UNDERSTANDING), pageLabel.takeIf { current?.stage == PageStage.UNDERSTANDING })
             Step(
                 stringResource(R.string.stage_organizing),
                 stringResource(R.string.stage_organizing_body),
-                if (finished == total && total > 0) StepState.ACTIVE else StepState.WAITING,
+                when {
+                    status == MaterialStatus.FAILED -> StepState.WAITING
+                    status == MaterialStatus.NEEDS_REVIEW || status == MaterialStatus.READY -> StepState.DONE
+                    finished == total && total > 0 -> StepState.ACTIVE
+                    else -> StepState.WAITING
+                },
             )
             failed.forEach { page ->
                 Row(
@@ -133,7 +144,7 @@ fun ProcessingScreen(materialId: String, onBack: () -> Unit, onReady: () -> Unit
                     Icon(AppIcons.Warning, null, tint = StudyTheme.colors.onUncertainContainer)
                     Spacer(Modifier.width(10.dp))
                     Text(
-                        stringResource(R.string.processing_page_failed, page.pageIndex + 1, page.error.orEmpty()),
+                        stringResource(R.string.processing_page_failed, page.pageIndex + 1, pageErrorText(page.error)),
                         Modifier.weight(1f),
                         style = MaterialTheme.typography.bodySmall,
                         color = StudyTheme.colors.onUncertainContainer,
@@ -170,7 +181,7 @@ private fun PagePreview(page: PageEntity?) {
     ) {
         val path = page?.processedPath ?: page?.originalPath
         if (path != null) {
-            AsyncImage(model = File(path), contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize().padding(12.dp))
+            AsyncImage(model = pageImageRequest(path, page.updatedAt), contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize().padding(12.dp))
         }
         val active = page != null && page.stage in setOf(PageStage.CLEANING, PageStage.READING, PageStage.UNDERSTANDING)
         if (active) {

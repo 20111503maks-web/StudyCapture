@@ -40,8 +40,11 @@ class MaterialProcessor(
         if (material.status != MaterialStatus.PROCESSING) return
         val cyrillic = settings.current().cyrillicOcr
 
-        for (page in pageDao.pages(materialId)) {
-            if (page.stage == PageStage.READY || page.stage == PageStage.FAILED) continue
+        // Re-query every round: a page retried while this run is active is picked up too.
+        // Terminates: each round moves a page to READY/FAILED, or the page was deleted.
+        while (true) {
+            val page = pageDao.pages(materialId).firstOrNull { it.stage != PageStage.READY && it.stage != PageStage.FAILED }
+                ?: break
             try {
                 processPage(page, cyrillic)
             } catch (e: CancellationException) {
@@ -92,6 +95,8 @@ class MaterialProcessor(
     suspend fun organize(materialId: String) {
         val material = libraryDao.material(materialId) ?: return
         val pages = pageDao.pages(materialId)
+        // Another run (e.g. a retried page) still has work: it will organize when done.
+        if (pages.any { it.stage != PageStage.READY && it.stage != PageStage.FAILED }) return
         if (pages.isNotEmpty() && pages.all { it.stage == PageStage.FAILED }) {
             libraryDao.updateMaterial(material.copy(status = MaterialStatus.FAILED, updatedAt = now()))
             return
@@ -117,11 +122,17 @@ class MaterialProcessor(
 
     private fun MaterialEntity.titleIsDefault() = title.isBlank() || title == DEFAULT_TITLE
 
+    /** Errors are stored as codes and translated in the UI (see ui/Format.kt pageErrorText). */
     private fun describe(e: Throwable): String = when (e) {
-        is OutOfMemoryError -> "Not enough memory to process this page"
-        is ImageDecoder.DecodeException -> "This file could not be read as an image"
-        is java.io.IOException -> "This file could not be read"
-        else -> e.message ?: e.javaClass.simpleName
+        is OutOfMemoryError -> ERROR_MEMORY
+        is ImageDecoder.DecodeException, is java.io.IOException -> ERROR_UNREADABLE
+        else -> ERROR_GENERIC
+    }
+
+    /** Marks a material as failed when the run itself (not one page) cannot continue. */
+    suspend fun markFailed(materialId: String) {
+        val material = libraryDao.material(materialId) ?: return
+        libraryDao.updateMaterial(material.copy(status = MaterialStatus.FAILED, updatedAt = now()))
     }
 
     private fun now() = System.currentTimeMillis()
@@ -130,5 +141,8 @@ class MaterialProcessor(
         /** Placeholder title until the pipeline finds a heading; the UI shows a localized label. */
         const val DEFAULT_TITLE = ""
         const val ERROR_NO_CYRILLIC = "cyrillic-data-missing"
+        const val ERROR_MEMORY = "memory"
+        const val ERROR_UNREADABLE = "unreadable"
+        const val ERROR_GENERIC = "generic"
     }
 }

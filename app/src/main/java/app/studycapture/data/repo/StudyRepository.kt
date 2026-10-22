@@ -48,7 +48,7 @@ class StudyRepository(
     /** Replaces earlier unapproved suggestions; approved cards are never touched. Returns the count. */
     suspend fun suggestCards(materialId: String): Int {
         val now = System.currentTimeMillis()
-        val existing = studyDao.activeCards(materialId).map { it.front.lowercase() }.toSet()
+        val existing = studyDao.decidedFronts(materialId).map { it.lowercase() }.toSet()
         val suggestions = assistant.suggestFlashcards(pageTexts(materialId))
             .filter { it.front.lowercase() !in existing }
         studyDao.deleteSuggestions(materialId)
@@ -65,6 +65,8 @@ class StudyRepository(
         )
         return suggestions.size
     }
+
+    suspend fun hasSuggestions(materialId: String): Boolean = studyDao.suggestedCount(materialId) > 0
 
     suspend fun approve(cardId: String, front: String? = null, back: String? = null) {
         val card = studyDao.card(cardId) ?: return
@@ -112,7 +114,7 @@ class StudyRepository(
         return after
     }
 
-    fun observeDueCount(now: Long) = studyDao.observeDueCount(now)
+    fun observeDueCount() = studyDao.observeDueCount()
     fun observeReviewTimes(since: Long) = studyDao.observeReviewTimes(since)
     fun observeWeakTopic(since: Long) = studyDao.observeWeakTopic(since)
 }

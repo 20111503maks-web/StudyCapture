@@ -2,6 +2,7 @@ package app.studycapture.ui
 
 import androidx.activity.compose.LocalActivity
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -58,7 +59,9 @@ fun AppShell() {
         .any { destination?.hasRoute(it) == true }
     val scannerUnavailable = stringResource(R.string.capture_scanner_unavailable)
 
+    // Screens apply their own status/navigation bar padding, so the Scaffold must not add it again.
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
@@ -80,6 +83,7 @@ fun AppShell() {
         StudyNavHost(
             navController = navController,
             onCapture = { showCapture = true },
+            onPasteText = captureVm::importText,
             snackbar = snackbar,
             modifier = Modifier.padding(padding),
         )

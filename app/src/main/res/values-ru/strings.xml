@@ -68,6 +68,9 @@
     <string name="stage_organizing">Организация</string>
     <string name="stage_organizing_body">Подбор предмета и темы</string>
 
+    <string name="page_error_memory">не хватило памяти — попробуйте позже</string>
+    <string name="page_error_unreadable">файл не удалось прочитать как изображение</string>
+    <string name="page_error_generic">не удалось обработать</string>
     <string name="check_title">Проверьте текст</string>
     <string name="check_original_photo">Оригинальное фото</string>
     <string name="check_read_on_device">Распознано на телефоне</string>

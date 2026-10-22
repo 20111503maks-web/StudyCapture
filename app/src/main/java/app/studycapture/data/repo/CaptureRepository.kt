@@ -1,6 +1,7 @@
 package app.studycapture.data.repo
 
 import android.net.Uri
+import androidx.room.withTransaction
 import app.studycapture.data.db.AppDatabase
 import app.studycapture.data.db.MaterialEntity
 import app.studycapture.data.db.MaterialStatus
@@ -11,7 +12,9 @@ import app.studycapture.data.files.PageFileStore
 import app.studycapture.processing.MaterialProcessor
 import app.studycapture.processing.ProcessingScheduler
 import app.studycapture.understanding.StructureAnalyzer
-import java.io.IOException
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class CaptureRepository(
@@ -36,10 +39,10 @@ class CaptureRepository(
                 files.copyIn(uri, target)
                 if (source == SourceType.CAMERA) files.deleteScannerOutput(uri)
                 null
-            } catch (e: IOException) {
-                e
-            } catch (e: SecurityException) {
-                e
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                e // unreadable, revoked, too large, provider error: the page is marked failed
             }
             PageEntity(
                 id = pageId,
@@ -50,7 +53,7 @@ class CaptureRepository(
                 stage = if (error == null) PageStage.CAPTURED else PageStage.FAILED,
                 language = null,
                 ocrEngine = null,
-                error = error?.let { "This file could not be read" },
+                error = error?.let { MaterialProcessor.ERROR_UNREADABLE },
                 createdAt = now,
                 updatedAt = now,
             )
@@ -76,27 +79,30 @@ class CaptureRepository(
         val now = System.currentTimeMillis()
         val materialId = UUID.randomUUID().toString()
         val pageId = UUID.randomUUID().toString()
-        db.libraryDao().insertMaterial(
-            MaterialEntity(
-                id = materialId,
-                topicId = null,
-                title = MaterialProcessor.DEFAULT_TITLE,
-                sourceType = SourceType.TEXT,
-                status = MaterialStatus.PROCESSING,
-                createdAt = now,
-                updatedAt = now,
-            ),
-        )
-        db.pageDao().insertPages(
-            listOf(
-                PageEntity(
-                    id = pageId, materialId = materialId, pageIndex = 0, originalPath = null,
-                    processedPath = null, stage = PageStage.READY, language = null, ocrEngine = "pasted-text",
-                    error = null, createdAt = now, updatedAt = now,
+        val blocks = withContext(Dispatchers.Default) { StructureAnalyzer.analyzeText(text) }
+        db.withTransaction {
+            db.libraryDao().insertMaterial(
+                MaterialEntity(
+                    id = materialId,
+                    topicId = null,
+                    title = MaterialProcessor.DEFAULT_TITLE,
+                    sourceType = SourceType.TEXT,
+                    status = MaterialStatus.PROCESSING,
+                    createdAt = now,
+                    updatedAt = now,
                 ),
-            ),
-        )
-        db.pageDao().replaceBlocks(pageId, StructureAnalyzer.analyzeText(text).map { it.toEntity(pageId) })
+            )
+            db.pageDao().insertPages(
+                listOf(
+                    PageEntity(
+                        id = pageId, materialId = materialId, pageIndex = 0, originalPath = null,
+                        processedPath = null, stage = PageStage.READY, language = null, ocrEngine = "pasted-text",
+                        error = null, createdAt = now, updatedAt = now,
+                    ),
+                ),
+            )
+            db.pageDao().replaceBlocks(pageId, blocks.map { it.toEntity(pageId) })
+        }
         processor.organize(materialId)
         return materialId
     }

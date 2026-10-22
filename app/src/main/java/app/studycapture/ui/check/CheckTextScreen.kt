@@ -31,7 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.studycapture.R
 import app.studycapture.data.repo.toModel
-import app.studycapture.processing.MaterialProcessor
+import app.studycapture.data.db.PageStage
+import app.studycapture.ui.pageErrorText
 import app.studycapture.ui.appViewModel
 import app.studycapture.ui.components.AppIcons
 import app.studycapture.ui.components.ConfirmDialog
@@ -60,7 +61,7 @@ fun CheckTextScreen(materialId: String, onBack: () -> Unit, onSaved: (String) ->
         }
         if (page != null && (page.originalPath != null || page.processedPath != null)) {
             val highlight = state.pageBlocks.firstOrNull { it.rowId == focusedBlock }?.toModel()?.box
-            PagePhoto(page.processedPath ?: page.originalPath, highlight, Modifier.fillMaxWidth().height(220.dp).padding(horizontal = 16.dp))
+            PagePhoto(page.processedPath ?: page.originalPath, highlight, Modifier.fillMaxWidth().height(220.dp).padding(horizontal = 16.dp), version = page.updatedAt)
         }
         if (state.pages.size > 1) {
             LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -76,16 +77,9 @@ fun CheckTextScreen(materialId: String, onBack: () -> Unit, onSaved: (String) ->
                 p.language?.takeIf { it != "und" }?.let { AssistChip(onClick = {}, label = { Text(it.uppercase()) }) }
                 AssistChip(onClick = {}, label = { Text(stringResource(R.string.check_read_on_device)) })
             }
-            if (p.error == MaterialProcessor.ERROR_NO_CYRILLIC) {
+            if (p.error != null) {
                 Text(
-                    stringResource(R.string.check_no_cyrillic),
-                    Modifier.padding(horizontal = 16.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            } else if (p.error != null) {
-                Text(
-                    stringResource(R.string.processing_page_failed, p.pageIndex + 1, p.error),
+                    stringResource(R.string.processing_page_failed, p.pageIndex + 1, pageErrorText(p.error)),
                     Modifier.padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
@@ -126,7 +120,7 @@ fun CheckTextScreen(materialId: String, onBack: () -> Unit, onSaved: (String) ->
             Button(
                 onClick = { showSave = true },
                 modifier = Modifier.fillMaxWidth().height(54.dp),
-                enabled = state.material != null && state.blocks.isNotEmpty(),
+                enabled = state.material != null && state.pages.any { it.stage == PageStage.READY },
             ) {
                 Icon(AppIcons.Check, null)
                 Text("  " + stringResource(R.string.check_save))

@@ -70,6 +70,9 @@
     <string name="stage_organizing">Organizing</string>
     <string name="stage_organizing_body">Suggest subject and topic</string>
 
+    <string name="page_error_memory">not enough memory — try again later</string>
+    <string name="page_error_unreadable">this file could not be read as an image</string>
+    <string name="page_error_generic">could not be processed</string>
     <string name="check_title">Check the text</string>
     <string name="check_original_photo">Original photo</string>
     <string name="check_read_on_device">Read on this phone</string>

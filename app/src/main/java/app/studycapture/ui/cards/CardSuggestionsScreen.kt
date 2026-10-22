@@ -62,7 +62,8 @@ class CardSuggestionsViewModel(private val materialId: String, private val study
     private val generated = MutableStateFlow<Int?>(null)
 
     init {
-        generate()
+        // Suggest once; reopening the screen keeps pending suggestions and the user's decisions.
+        viewModelScope.launch { if (!study.hasSuggestions(materialId)) generate() }
     }
 
     val state: StateFlow<CardsState> = combine(study.observeCards(materialId), generating, generated) { c, g, n -> CardsState(c, g, n) }

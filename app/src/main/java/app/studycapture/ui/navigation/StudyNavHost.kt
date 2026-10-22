@@ -26,6 +26,7 @@ import app.studycapture.ui.review.ReviewScreen
 fun StudyNavHost(
     navController: NavHostController,
     onCapture: () -> Unit,
+    onPasteText: (String) -> Unit,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
@@ -77,8 +78,10 @@ fun StudyNavHost(
         composable<PasteTextRoute> {
             PasteTextScreen(
                 onBack = back,
-                onCreated = { id ->
-                    navController.navigate(CheckTextRoute(id)) { popUpTo(PasteTextRoute) { inclusive = true } }
+                onSubmit = { text ->
+                    // The new material arrives through CaptureViewModel.imported → Processing → Check.
+                    navController.popBackStack()
+                    onPasteText(text)
                 },
             )
         }

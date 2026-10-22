@@ -9,6 +9,8 @@ import app.studycapture.data.db.TopicEntity
 import app.studycapture.data.files.PageFileStore
 import app.studycapture.understanding.SearchQueryParser
 import app.studycapture.processing.ProcessingScheduler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class LibraryRepository(
@@ -19,9 +21,9 @@ class LibraryRepository(
     private val libraryDao get() = db.libraryDao()
     private val pageDao get() = db.pageDao()
 
-    fun observeSubjects(now: Long) = libraryDao.observeSubjects(now)
+    fun observeSubjects() = libraryDao.observeSubjects()
     fun observeSubject(id: String) = libraryDao.observeSubject(id)
-    fun observeTopics(subjectId: String, now: Long) = libraryDao.observeTopics(subjectId, now)
+    fun observeTopics(subjectId: String) = libraryDao.observeTopics(subjectId)
     fun observeMaterials(subjectId: String? = null, limit: Int = 200) = libraryDao.observeMaterials(subjectId, limit)
     fun observeUnfinished() = libraryDao.observeUnfinished()
     fun observeMaterial(id: String) = libraryDao.observeMaterial(id)
@@ -46,7 +48,8 @@ class LibraryRepository(
     /** Files the material under subject/topic (creating them if new) and marks it saved. */
     suspend fun saveMaterial(materialId: String, subjectName: String, topicName: String, title: String) {
         val now = System.currentTimeMillis()
-        val subject = libraryDao.subjectByName(subjectName.trim()) ?: SubjectEntity(
+        // Kotlin comparison: SQLite NOCASE folds ASCII only, "биология" ≠ "Биология" there.
+        val subject = libraryDao.allSubjects().firstOrNull { it.name.equals(subjectName.trim(), ignoreCase = true) } ?: SubjectEntity(
             id = UUID.randomUUID().toString(),
             name = subjectName.trim(),
             colorIndex = (libraryDao.allSubjects().size % SUBJECT_COLORS),
@@ -54,7 +57,7 @@ class LibraryRepository(
             updatedAt = now,
         ).also { libraryDao.insertSubject(it) }
         val cleanTopic = topicName.trim().ifEmpty { title.trim() }
-        val topic = libraryDao.topicByName(subject.id, cleanTopic) ?: TopicEntity(
+        val topic = libraryDao.topicsOf(subject.id).firstOrNull { it.name.equals(cleanTopic, ignoreCase = true) } ?: TopicEntity(
             id = UUID.randomUUID().toString(),
             subjectId = subject.id,
             name = cleanTopic,
@@ -75,7 +78,7 @@ class LibraryRepository(
     suspend fun deleteMaterial(materialId: String) {
         scheduler.cancel(materialId)
         libraryDao.deleteMaterial(materialId)
-        files.deleteMaterial(materialId)
+        withContext(Dispatchers.IO) { files.deleteMaterial(materialId) }
     }
 
     /**
@@ -89,7 +92,7 @@ class LibraryRepository(
             db.studyDao().deleteSummary(page.materialId)
             pageDao.deletePage(pageId)
         }
-        files.deleteFiles(page.originalPath, page.processedPath)
+        withContext(Dispatchers.IO) { files.deleteFiles(page.originalPath, page.processedPath) }
         if (pageDao.pages(page.materialId).isEmpty()) deleteMaterial(page.materialId)
     }
 
@@ -98,7 +101,7 @@ class LibraryRepository(
         val ids = libraryDao.materialIdsForSubject(subjectId)
         ids.forEach(scheduler::cancel)
         libraryDao.deleteSubject(subjectId)
-        ids.forEach(files::deleteMaterial)
+        withContext(Dispatchers.IO) { ids.forEach(files::deleteMaterial) }
     }
 
     companion object {

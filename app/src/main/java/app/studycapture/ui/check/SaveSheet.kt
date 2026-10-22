@@ -55,7 +55,10 @@ fun SaveSheet(
     var topic by rememberSaveable { mutableStateOf(topicLabel ?: initialTitle) }
     var title by rememberSaveable { mutableStateOf(initialTitle) }
 
+    var placementLoaded by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
+        if (placementLoaded) return@LaunchedEffect // keep the user's edits after rotation
+        placementLoaded = true
         val (savedSubject, savedTopic) = loadPlacement()
         if (savedSubject != null) subject = savedSubject
         if (savedTopic != null) topic = savedTopic

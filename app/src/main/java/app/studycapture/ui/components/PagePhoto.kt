@@ -22,16 +22,29 @@ import androidx.compose.ui.unit.dp
 import app.studycapture.R
 import app.studycapture.model.BBox
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+
+/**
+ * Image request keyed by file and version: a retried page rewrites the same file,
+ * so the memory cache must not keep showing the old image.
+ */
+@Composable
+fun pageImageRequest(path: String, version: Long): ImageRequest =
+    ImageRequest.Builder(LocalPlatformContext.current)
+        .data(File(path))
+        .memoryCacheKey("$path@$version")
+        .build()
 
 /**
  * The page photo, fitted into its box, with an optional frame around the
  * region a block was read from — so the user can compare text with the original.
  */
 @Composable
-fun PagePhoto(path: String?, highlight: BBox?, modifier: Modifier = Modifier) {
+fun PagePhoto(path: String?, highlight: BBox?, modifier: Modifier = Modifier, version: Long = 0L) {
     val amber = Color(0xFFF2A93B)
     val imageSize = produceState<Pair<Int, Int>?>(null, path) {
         value = path?.let {
@@ -46,7 +59,7 @@ fun PagePhoto(path: String?, highlight: BBox?, modifier: Modifier = Modifier) {
     BoxWithConstraints(modifier.clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp)).background(Color(0xFF2A2D33))) {
         if (path == null) return@BoxWithConstraints
         AsyncImage(
-            model = File(path),
+            model = pageImageRequest(path, version),
             contentDescription = stringResource(R.string.check_original_photo),
             contentScale = ContentScale.Fit,
             modifier = Modifier.fillMaxSize().padding(8.dp),
