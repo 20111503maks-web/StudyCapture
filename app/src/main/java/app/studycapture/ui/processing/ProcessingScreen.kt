@@ -63,6 +63,7 @@ import app.studycapture.ui.pageErrorText
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
@@ -94,8 +95,11 @@ fun ProcessingScreen(materialId: String, onBack: () -> Unit, onReady: () -> Unit
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(status) {
-        val visible = lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
-        if (visible && (status == MaterialStatus.NEEDS_REVIEW || status == MaterialStatus.READY)) onReady()
+        if (status == MaterialStatus.NEEDS_REVIEW || status == MaterialStatus.READY) {
+            // Wait until the screen is actually shown (not mid-transition or in background).
+            lifecycle.currentStateFlow.first { it.isAtLeast(Lifecycle.State.RESUMED) }
+            onReady()
+        }
     }
 
     val total = pages.size
@@ -181,7 +185,7 @@ private fun PagePreview(page: PageEntity?) {
     ) {
         val path = page?.processedPath ?: page?.originalPath
         if (path != null) {
-            AsyncImage(model = pageImageRequest(path, page.updatedAt), contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize().padding(12.dp))
+            AsyncImage(model = pageImageRequest(path, page?.updatedAt ?: 0L), contentDescription = null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize().padding(12.dp))
         }
         val active = page != null && page.stage in setOf(PageStage.CLEANING, PageStage.READING, PageStage.UNDERSTANDING)
         if (active) {

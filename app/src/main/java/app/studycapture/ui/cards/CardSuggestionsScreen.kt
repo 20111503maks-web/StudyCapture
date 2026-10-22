@@ -63,7 +63,14 @@ class CardSuggestionsViewModel(private val materialId: String, private val study
 
     init {
         // Suggest once; reopening the screen keeps pending suggestions and the user's decisions.
-        viewModelScope.launch { if (!study.hasSuggestions(materialId)) generate() }
+        viewModelScope.launch {
+            generating.value = true // no "nothing found" flash before the first result
+            try {
+                if (!study.hasSuggestions(materialId)) generated.value = study.suggestCards(materialId)
+            } finally {
+                generating.value = false
+            }
+        }
     }
 
     val state: StateFlow<CardsState> = combine(study.observeCards(materialId), generating, generated) { c, g, n -> CardsState(c, g, n) }

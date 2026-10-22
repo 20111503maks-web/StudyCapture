@@ -129,10 +129,17 @@ class MaterialProcessor(
         else -> ERROR_GENERIC
     }
 
-    /** Marks a material as failed when the run itself (not one page) cannot continue. */
+    /**
+     * The run itself (not one page) failed. Unfinished pages become FAILED so they get a
+     * Retry button; if some pages were read, the material stays reviewable.
+     */
     suspend fun markFailed(materialId: String) {
         val material = libraryDao.material(materialId) ?: return
-        libraryDao.updateMaterial(material.copy(status = MaterialStatus.FAILED, updatedAt = now()))
+        val pages = pageDao.pages(materialId)
+        pages.filter { it.stage != PageStage.READY && it.stage != PageStage.FAILED }
+            .forEach { pageDao.updatePage(it.copy(stage = PageStage.FAILED, error = ERROR_GENERIC, updatedAt = now())) }
+        val status = if (pages.any { it.stage == PageStage.READY }) MaterialStatus.NEEDS_REVIEW else MaterialStatus.FAILED
+        libraryDao.updateMaterial(material.copy(status = status, updatedAt = now()))
     }
 
     private fun now() = System.currentTimeMillis()
