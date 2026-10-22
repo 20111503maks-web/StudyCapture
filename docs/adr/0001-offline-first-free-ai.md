@@ -27,7 +27,7 @@ v0.1 ships `OnDeviceStudyAssistant`, built on `core/understanding`:
 - flashcards use templates for the question ("What is X?") and **verbatim material** for the answer;
 - subject suggestions come from a keyword lexicon plus the user's own past choices.
 
-The app declares no `INTERNET` permission at all.
+The app declares no `INTERNET` permission at all. Caveat: the document scanner runs inside Google Play services (its own process and permissions); Google documents its processing as on-device. Users who prefer not to use it can import photos.
 
 ## Consequences
 

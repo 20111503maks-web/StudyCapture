@@ -32,6 +32,10 @@ class ProcessingScheduler(private val context: Context) {
         WorkManager.getInstance(context).enqueueUniqueWork("process-$materialId", ExistingWorkPolicy.KEEP, request)
     }
 
+    fun cancel(materialId: String) {
+        WorkManager.getInstance(context).cancelUniqueWork("process-$materialId")
+    }
+
     fun cancelAll() {
         WorkManager.getInstance(context).cancelAllWorkByTag(TAG)
     }

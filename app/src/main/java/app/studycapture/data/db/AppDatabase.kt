@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [
@@ -28,6 +29,14 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         fun create(context: Context): AppDatabase =
             Room.databaseBuilder(context, AppDatabase::class.java, "studycapture.db")
+                // Deleted notes are overwritten on disk, not just unlinked.
+                .addCallback(
+                    object : Callback() {
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            db.query("PRAGMA secure_delete = ON").close()
+                        }
+                    },
+                )
                 // Schema changes must ship with a Migration; never wipe user notes.
                 .build()
     }

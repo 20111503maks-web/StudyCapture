@@ -108,6 +108,13 @@ interface StudyDao {
     @Query("DELETE FROM summaries")
     suspend fun deleteAllSummaries()
 
+    @Query("DELETE FROM summaries WHERE materialId = :materialId")
+    suspend fun deleteSummary(materialId: String)
+
+    /** Cards quote their page; review logs go with them (cascade). */
+    @Query("DELETE FROM flashcards WHERE pageId = :pageId")
+    suspend fun deleteCardsForPage(pageId: String)
+
     @Query("DELETE FROM flashcards WHERE status != 'ACTIVE'")
     suspend fun deleteUnapprovedCards()
 }

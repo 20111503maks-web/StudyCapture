@@ -1,30 +1,64 @@
 name: Release APK
 
-# Push a tag like v0.1.0 to publish a downloadable test APK on the Releases page.
+# Push a tag like v0.1.0 to publish a signed APK on the Releases page.
+# Needs repository secrets: SIGNING_KEYSTORE_B64, SIGNING_STORE_PASSWORD,
+# SIGNING_KEY_ALIAS, SIGNING_KEY_PASSWORD (see README, "Подпись релизов").
 on:
   push:
     tags: ["v*"]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :core:srs:test :core:understanding:test :app:assembleDebug --stacktrace
-      - run: cp app/build/outputs/apk/debug/app-debug.apk StudyCapture-${{ github.ref_name }}-debug.apk
-      - uses: softprops/action-gh-release@v2
         with:
-          files: StudyCapture-${{ github.ref_name }}-debug.apk
-          prerelease: true
-          body: |
-            Test build (debug-signed). Install on Android 9+ by opening the APK on the phone
-            and allowing installs from this source. Not for Google Play.
+          validate-wrappers: true
+          cache-read-only: true
+      - name: Decode signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then echo "::error::SIGNING_KEYSTORE_B64 secret is not set"; exit 1; fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+      - name: Build signed release APK
+        env:
+          SIGNING_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: ./gradlew :core:srs:test :core:understanding:test :app:assembleRelease --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-apk
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          mv app-release.apk "StudyCapture-${TAG}.apk"
+          gh release create "$TAG" "StudyCapture-${TAG}.apk" --repo "$GITHUB_REPOSITORY" --prerelease \
+            --notes "Test build for Android 9+. Open the APK on the phone and allow installs from this source."

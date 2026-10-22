@@ -25,7 +25,7 @@
     <string name="first_run_step1">Capture or import a page</string>
     <string name="first_run_step2">Check the recognized text next to your photo</string>
     <string name="first_run_step3">Review with flashcards made from your pages</string>
-    <string name="first_run_privacy">Everything stays on this phone. StudyCapture has no internet access.</string>
+    <string name="first_run_privacy">StudyCapture has no internet permission: the app itself cannot send your notes anywhere. The document scanner is part of Google Play services; Google says scans are processed on the phone. Prefer not to use it? Import photos instead.</string>
 
     <string name="home_today">Today</string>
     <string name="home_start_review">Start review</string>
@@ -44,7 +44,7 @@
 
     <string name="capture_title">Add material</string>
     <string name="capture_scan">Scan pages</string>
-    <string name="capture_scan_body">Edges, perspective and cleanup run on this phone. Up to 24 pages at once.</string>
+    <string name="capture_scan_body">Google Play services scanner, on this phone: edges, perspective, cleanup. Up to 24 pages.</string>
     <string name="capture_photos">Import photos</string>
     <string name="capture_photos_body">Used as they are — rotation and contrast only</string>
     <string name="capture_paste">Paste text</string>
@@ -123,7 +123,7 @@
     <string name="page_short">p.%1$d</string>
     <string name="page_typed_text">Typed text — no photo</string>
     <string name="page_delete">Delete page</string>
-    <string name="page_delete_body">The original photo and its text will be deleted.</string>
+    <string name="page_delete_body">The photo, its text and the flashcards made from it will be deleted. The summary will need to be made again.</string>
     <string name="source_exact_text">Exact text from your page.</string>
 
     <string name="summary_engine_note">Built on this phone by picking sentences from your pages. Nothing is rewritten or added — every point links to its page.</string>
@@ -176,7 +176,7 @@
 
     <string name="profile_title">Profile</string>
     <string name="profile_offline_title">Private and offline</string>
-    <string name="profile_offline_body">Recognition, summaries and flashcards run on this phone. This version has no internet access and no account.</string>
+    <string name="profile_offline_body">Recognition, summaries and flashcards run inside StudyCapture on this phone. The app has no internet permission and no account. The scanner is provided by Google Play services.</string>
     <string name="profile_recognition">Text recognition</string>
     <string name="profile_cyrillic">Russian (Cyrillic) text</string>
     <string name="profile_cyrillic_body">Also reads pages with Tesseract. Slower, needed for Cyrillic.</string>
@@ -188,9 +188,9 @@
     <string name="profile_storage_body">%1$d original photos · %2$s. Kept until you delete them.</string>
     <string name="profile_delete">Delete data</string>
     <string name="profile_delete_generated">Delete generated data</string>
-    <string name="profile_delete_generated_body">Summaries and unapproved flashcard suggestions will be deleted. Pages and approved cards stay.</string>
+    <string name="profile_delete_generated_body">Summaries, unapproved flashcard suggestions and subject suggestions will be deleted. Pages and approved cards stay.</string>
     <string name="profile_delete_all">Delete everything</string>
-    <string name="profile_delete_all_body">All pages, photos, flashcards, review history and settings will be deleted from this phone. This cannot be undone.</string>
+    <string name="profile_delete_all_body">All pages, photos, flashcards, review history and settings will be deleted from this phone. There is no backup or cloud copy, so this cannot be undone.</string>
     <string name="profile_delete_hint">To delete one page or one subject, open it in Library.</string>
     <string name="profile_deleted">Deleted</string>
     <string name="profile_about">StudyCapture 0.1 · open-source components: ML Kit, Tesseract, FSRS. See the README for licenses.</string>

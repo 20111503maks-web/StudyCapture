@@ -11,6 +11,7 @@ import app.studycapture.data.files.PageFileStore
 import app.studycapture.processing.MaterialProcessor
 import app.studycapture.processing.ProcessingScheduler
 import app.studycapture.understanding.StructureAnalyzer
+import java.io.IOException
 import java.util.UUID
 
 class CaptureRepository(
@@ -31,7 +32,15 @@ class CaptureRepository(
         val pages = uris.mapIndexed { index, uri ->
             val pageId = UUID.randomUUID().toString()
             val target = files.originalFile(materialId, pageId)
-            val error = runCatching { files.copyIn(uri, target) }.exceptionOrNull()
+            val error = try {
+                files.copyIn(uri, target)
+                if (source == SourceType.CAMERA) files.deleteScannerOutput(uri)
+                null
+            } catch (e: IOException) {
+                e
+            } catch (e: SecurityException) {
+                e
+            }
             PageEntity(
                 id = pageId,
                 materialId = materialId,

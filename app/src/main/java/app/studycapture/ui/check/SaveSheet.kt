@@ -32,6 +32,8 @@ import app.studycapture.R
 import app.studycapture.ui.catalogSubjectLabels
 import app.studycapture.ui.components.Overline
 import app.studycapture.ui.subjectLabel
+import app.studycapture.understanding.SubjectCatalog
+import java.util.Locale
 
 /** Subject → Topic → title. The on-device suggestion is pre-filled; the user always decides. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -48,7 +50,9 @@ fun SaveSheet(
 ) {
     val suggestedLabel = suggestedSubject?.let { subjectLabel(it) }
     var subject by rememberSaveable { mutableStateOf(suggestedLabel.orEmpty()) }
-    var topic by rememberSaveable { mutableStateOf(suggestedTopic ?: initialTitle) }
+    // Classifier topics are canonical English keys; show them in the phone's language.
+    val topicLabel = suggestedTopic?.let { SubjectCatalog.displayName(it, Locale.getDefault().language) }
+    var topic by rememberSaveable { mutableStateOf(topicLabel ?: initialTitle) }
     var title by rememberSaveable { mutableStateOf(initialTitle) }
 
     LaunchedEffect(Unit) {

@@ -35,7 +35,7 @@ class AppContainer(context: Context) {
 
     val processor by lazy { MaterialProcessor(database, files, ocr, settings, assistant) }
     val capture by lazy { CaptureRepository(database, files, scheduler, processor) }
-    val library by lazy { LibraryRepository(database, files) }
+    val library by lazy { LibraryRepository(database, files, scheduler) }
     val study by lazy { StudyRepository(database, assistant, srs) }
-    val privacy by lazy { PrivacyRepository(database, files, settings, scheduler) }
+    val privacy by lazy { PrivacyRepository(appContext, database, files, settings, scheduler) }
 }

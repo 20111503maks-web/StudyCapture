@@ -34,3 +34,13 @@
 | 18 | Удалить страницу / предмет / всё | файлы и записи удалены, хранилище уменьшилось | ⏳ |
 | 19 | Тёмная тема, русский язык системы | все экраны читаемы | ⏳ |
 | 20 | Устройство без Google Play services | сообщение про сканер, импорт фото работает | ⏳ |
+
+## Проверка после установки (Android 14+)
+
+После сканирования 3 страниц и OCR с кириллицей и без:
+`adb logcat | grep -iE "SecurityException|TransportRuntime|JobInfoScheduler|ACCESS_NETWORK_STATE|FATAL"` —
+ожидается отсутствие падений (у приложения намеренно нет сетевых разрешений; телеметрия ML Kit должна
+тихо не отправляться). Также `adb shell run-as app.studycapture ls -R cache` после сканирования —
+копии сканов в кэше должны удаляться после импорта.
+
+CI проверяет, что в APK нет `INTERNET` и `ACCESS_NETWORK_STATE` (шаг «Assert APK has no network permissions»).

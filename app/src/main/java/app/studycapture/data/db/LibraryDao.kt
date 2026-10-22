@@ -67,6 +67,15 @@ interface LibraryDao {
     @Insert
     suspend fun insertSubject(subject: SubjectEntity)
 
+    @Query("SELECT m.id FROM materials m JOIN topics t ON m.topicId = t.id WHERE t.subjectId = :subjectId")
+    suspend fun materialIdsForSubject(subjectId: String): List<String>
+
+    @Query("SELECT id FROM materials")
+    suspend fun allMaterialIds(): List<String>
+
+    @Query("UPDATE materials SET suggestedSubject = NULL, suggestedTopic = NULL, suggestionKeywords = NULL")
+    suspend fun clearSuggestions()
+
     @Query("DELETE FROM subjects WHERE id = :id")
     suspend fun deleteSubject(id: String)
 

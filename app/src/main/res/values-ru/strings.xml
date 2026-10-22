@@ -23,7 +23,7 @@
     <string name="first_run_step1">Снимите или загрузите страницу</string>
     <string name="first_run_step2">Проверьте распознанный текст рядом с фото</string>
     <string name="first_run_step3">Повторяйте по карточкам из своих страниц</string>
-    <string name="first_run_privacy">Всё хранится только на этом телефоне. У StudyCapture нет доступа в интернет.</string>
+    <string name="first_run_privacy">У StudyCapture нет разрешения на интернет — само приложение не может никуда отправить ваши заметки. Сканер документов — часть сервисов Google Play; по словам Google, обработка идёт на телефоне. Не хотите его использовать — загружайте фото.</string>
 
     <string name="home_today">Сегодня</string>
     <string name="home_start_review">Начать повторение</string>
@@ -42,7 +42,7 @@
 
     <string name="capture_title">Добавить материал</string>
     <string name="capture_scan">Сканировать страницы</string>
-    <string name="capture_scan_body">Края, перспектива и очистка — прямо на телефоне. До 24 страниц за раз.</string>
+    <string name="capture_scan_body">Сканер сервисов Google Play, на телефоне: края, перспектива, очистка. До 24 страниц.</string>
     <string name="capture_photos">Загрузить фото</string>
     <string name="capture_photos_body">Как есть — только поворот и контраст</string>
     <string name="capture_paste">Вставить текст</string>
@@ -121,7 +121,7 @@
     <string name="page_short">стр. %1$d</string>
     <string name="page_typed_text">Набранный текст — без фото</string>
     <string name="page_delete">Удалить страницу</string>
-    <string name="page_delete_body">Оригинальное фото и его текст будут удалены.</string>
+    <string name="page_delete_body">Будут удалены фото, его текст и карточки из него. Конспект нужно будет сделать заново.</string>
     <string name="source_exact_text">Точный текст с вашей страницы.</string>
 
     <string name="summary_engine_note">Собрано на телефоне из предложений ваших страниц. Ничего не переписано и не добавлено — каждый пункт ссылается на свою страницу.</string>
@@ -174,7 +174,7 @@
 
     <string name="profile_title">Профиль</string>
     <string name="profile_offline_title">Приватно и офлайн</string>
-    <string name="profile_offline_body">Распознавание, конспекты и карточки работают на телефоне. У этой версии нет доступа в интернет и нет аккаунта.</string>
+    <string name="profile_offline_body">Распознавание, конспекты и карточки работают внутри StudyCapture на телефоне. У приложения нет разрешения на интернет и нет аккаунта. Сканер предоставляют сервисы Google Play.</string>
     <string name="profile_recognition">Распознавание текста</string>
     <string name="profile_cyrillic">Русский текст (кириллица)</string>
     <string name="profile_cyrillic_body">Дополнительно читает страницы через Tesseract. Медленнее, нужно для кириллицы.</string>
@@ -186,9 +186,9 @@
     <string name="profile_storage_body">Оригиналов фото: %1$d · %2$s. Хранятся, пока вы их не удалите.</string>
     <string name="profile_delete">Удаление данных</string>
     <string name="profile_delete_generated">Удалить сгенерированное</string>
-    <string name="profile_delete_generated_body">Будут удалены конспекты и неодобренные карточки. Страницы и одобренные карточки останутся.</string>
+    <string name="profile_delete_generated_body">Будут удалены конспекты, неодобренные карточки и подсказки предметов. Страницы и одобренные карточки останутся.</string>
     <string name="profile_delete_all">Удалить всё</string>
-    <string name="profile_delete_all_body">Все страницы, фото, карточки, история повторений и настройки будут удалены с телефона. Это нельзя отменить.</string>
+    <string name="profile_delete_all_body">Все страницы, фото, карточки, история повторений и настройки будут удалены с телефона. Резервной и облачной копии нет, поэтому это нельзя отменить.</string>
     <string name="profile_delete_hint">Чтобы удалить одну страницу или предмет, откройте их в библиотеке.</string>
     <string name="profile_deleted">Удалено</string>
     <string name="profile_about">StudyCapture 0.1 · компоненты: ML Kit, Tesseract, FSRS. Лицензии — в README.</string>

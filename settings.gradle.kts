@@ -15,12 +15,20 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
-        mavenCentral()
-        // Tesseract4Android (Apache-2.0) is published only on JitPack.
-        maven("https://jitpack.io") {
-            content { includeGroup("cz.adaptech.tesseract4android") }
+        // Tesseract4Android (Apache-2.0) is published only on JitPack. exclusiveContent makes
+        // JitPack serve that group only, and that group come only from JitPack.
+        exclusiveContent {
+            forRepository { maven("https://jitpack.io") }
+            filter { includeGroup("cz.adaptech.tesseract4android") }
         }
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
     }
 }
 

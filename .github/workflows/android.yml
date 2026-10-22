@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@v4
         with:
@@ -21,14 +23,27 @@ jobs:
           java-version: 17
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: true
 
       - name: Unit tests (pure Kotlin modules)
         run: ./gradlew :core:model:test :core:srs:test :core:understanding:test --stacktrace
 
-      - name: Build debug APK
-        run: ./gradlew :app:assembleDebug --stacktrace
+      - name: Build debug APK and run app unit tests
+        run: ./gradlew :app:assembleDebug :app:testDebugUnitTest --stacktrace
 
-      - name: Upload APK
+      # The main privacy promise: the APK must not be able to use the network.
+      - name: Assert APK has no network permissions
+        run: |
+          AAPT2=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt2
+          PERMS=$("$AAPT2" dump permissions app/build/outputs/apk/debug/app-debug.apk)
+          echo "$PERMS"
+          if echo "$PERMS" | grep -qE 'android.permission.(INTERNET|ACCESS_NETWORK_STATE)'; then
+            echo "::error::Network permission found in the APK"
+            exit 1
+          fi
+
+      - name: Upload APK (debug build, for testers)
         uses: actions/upload-artifact@v4
         with:
           name: StudyCapture-debug-apk

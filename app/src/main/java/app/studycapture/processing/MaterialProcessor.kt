@@ -55,15 +55,22 @@ class MaterialProcessor(
 
     private suspend fun processPage(page: PageEntity, cyrillic: Boolean) {
         val original = page.originalPath?.let(::File) ?: error("missing original")
+        if (pageDao.page(page.id) == null) return
         var current = page.copy(stage = PageStage.CLEANING, error = null, updatedAt = now())
         pageDao.updatePage(current)
 
         val processedFile = files.processedFile(page.materialId, page.id)
+        files.ensureParent(processedFile)
         val bitmap = preparer.prepare(original, processedFile)
         try {
             current = current.copy(stage = PageStage.READING, processedPath = processedFile.path, updatedAt = now())
             pageDao.updatePage(current)
             val result = ocr.recognize(bitmap, cyrillic)
+            // The user may have deleted the page while it was being read: write nothing back.
+            if (pageDao.page(page.id) == null) {
+                files.deleteFiles(processedFile.path)
+                return
+            }
 
             current = current.copy(
                 stage = PageStage.UNDERSTANDING,

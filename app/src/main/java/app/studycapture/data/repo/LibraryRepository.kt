@@ -1,5 +1,6 @@
 package app.studycapture.data.repo
 
+import androidx.room.withTransaction
 import app.studycapture.data.db.AppDatabase
 import app.studycapture.data.db.MaterialStatus
 import app.studycapture.data.db.SearchHitRow
@@ -7,12 +8,13 @@ import app.studycapture.data.db.SubjectEntity
 import app.studycapture.data.db.TopicEntity
 import app.studycapture.data.files.PageFileStore
 import app.studycapture.understanding.SearchQueryParser
-import kotlinx.coroutines.flow.first
+import app.studycapture.processing.ProcessingScheduler
 import java.util.UUID
 
 class LibraryRepository(
     private val db: AppDatabase,
     private val files: PageFileStore,
+    private val scheduler: ProcessingScheduler,
 ) {
     private val libraryDao get() = db.libraryDao()
     private val pageDao get() = db.pageDao()
@@ -69,22 +71,32 @@ class LibraryRepository(
 
     suspend fun confirmBlock(pageId: String, blockIndex: Int) = pageDao.confirmBlock(pageId, blockIndex)
 
+    /** Stops background processing first so no file is written after the rows are gone. */
     suspend fun deleteMaterial(materialId: String) {
+        scheduler.cancel(materialId)
         libraryDao.deleteMaterial(materialId)
         files.deleteMaterial(materialId)
     }
 
-    /** Deletes the page with its original photo; deletes the material when it was the last page. */
+    /**
+     * Deletes the page, its photos, the flashcards quoted from it and the material's summary
+     * (which may quote it — the user can make it again). Deletes the material if it was the last page.
+     */
     suspend fun deletePage(pageId: String) {
         val page = pageDao.page(pageId) ?: return
-        pageDao.deletePage(pageId)
+        db.withTransaction {
+            db.studyDao().deleteCardsForPage(pageId)
+            db.studyDao().deleteSummary(page.materialId)
+            pageDao.deletePage(pageId)
+        }
         files.deleteFiles(page.originalPath, page.processedPath)
         if (pageDao.pages(page.materialId).isEmpty()) deleteMaterial(page.materialId)
     }
 
     suspend fun deleteSubject(subjectId: String) {
-        // Collect ids first: the cascade removes rows, files must be removed explicitly.
-        val ids = libraryDao.observeMaterials(subjectId, Int.MAX_VALUE).first().map { it.id }
+        // Collect ids first (any status): the cascade removes rows, files must be removed explicitly.
+        val ids = libraryDao.materialIdsForSubject(subjectId)
+        ids.forEach(scheduler::cancel)
         libraryDao.deleteSubject(subjectId)
         ids.forEach(files::deleteMaterial)
     }
