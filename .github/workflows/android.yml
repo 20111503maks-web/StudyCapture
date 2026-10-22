@@ -46,7 +46,7 @@ jobs:
         run: |
           [ -f build.log ] || exit 0
           grep -E "^e: |error:|What went wrong|^> |Could not |Unresolved|Execution failed|Cannot |not found|FAILED" build.log \
-            | grep -v "^> Task" | head -120 > errors.txt || true
+            | grep -v "^> Task" | head -120; grep -A12 "What went wrong" build.log | head -40 >> errors.txt > errors.txt || true
           split -l 12 errors.txt chunk_
           for f in chunk_*; do
             msg=$(sed -e 's/%/%25/g' "$f" | awk 'BEGIN{ORS="%0A"} {print}')

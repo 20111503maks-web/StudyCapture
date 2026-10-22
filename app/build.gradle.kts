@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "app.studycapture"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "app.studycapture"
