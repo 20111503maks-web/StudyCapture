@@ -30,11 +30,28 @@ jobs:
         run: ./gradlew :core:model:test :core:srs:test :core:understanding:test --stacktrace
 
       - name: Build debug APK and run app unit tests
-        run: ./gradlew :app:assembleDebug :app:testDebugUnitTest --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleDebug :app:testDebugUnitTest --stacktrace 2>&1 | tee build.log
 
       # Unsigned release build so R8/shrinking problems show up on every push, not first at release time.
       - name: Build release (R8 check)
-        run: ./gradlew :app:assembleRelease --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleRelease --stacktrace 2>&1 | tee -a build.log
+
+      # Surface compiler/Gradle errors as annotations (readable without downloading logs).
+      - name: Report build errors
+        if: failure()
+        run: |
+          [ -f build.log ] || exit 0
+          grep -E "^e: |error:|What went wrong|^> |Could not |Unresolved|Execution failed|Cannot |not found|FAILED" build.log \
+            | grep -v "^> Task" | head -120 > errors.txt || true
+          split -l 12 errors.txt chunk_
+          for f in chunk_*; do
+            msg=$(sed -e 's/%/%25/g' "$f" | awk 'BEGIN{ORS="%0A"} {print}')
+            echo "::error title=Build errors::${msg}"
+          done
 
       # The main privacy promise: the APK must not be able to use the network.
       - name: Assert APK has no network permissions
