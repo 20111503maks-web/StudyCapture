@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_back">Назад</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_clear">Очистить</string>
+    <string name="action_close">Закрыть</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_edit">Исправить</string>
+    <string name="action_retry">Повторить</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_undo">Отменить</string>
+
+    <string name="nav_home">Главная</string>
+    <string name="nav_library">Библиотека</string>
+    <string name="nav_capture">Снять</string>
+    <string name="nav_review">Повторение</string>
+    <string name="nav_profile">Профиль</string>
+
+    <string name="engine_on_device">На телефоне</string>
+
+    <string name="first_run_title">Превратите конспекты в учебную библиотеку</string>
+    <string name="first_run_body">Сфотографируйте доску, тетрадь или страницу учебника. StudyCapture распознает текст, разложит по предметам и поможет повторять.</string>
+    <string name="first_run_step1">Снимите или загрузите страницу</string>
+    <string name="first_run_step2">Проверьте распознанный текст рядом с фото</string>
+    <string name="first_run_step3">Повторяйте по карточкам из своих страниц</string>
+    <string name="first_run_privacy">Всё хранится только на этом телефоне. У StudyCapture нет доступа в интернет.</string>
+
+    <string name="home_today">Сегодня</string>
+    <string name="home_start_review">Начать повторение</string>
+    <string name="home_no_reviews">Повторять пока нечего</string>
+    <string name="home_no_reviews_body">Одобрите карточки из материала — они появятся здесь, когда придёт время.</string>
+    <string name="home_continue">Продолжить</string>
+    <string name="home_recent">Недавнее</string>
+    <string name="home_processing">Обрабатывается…</string>
+    <string name="home_needs_check">Можно проверить</string>
+    <string name="home_failed">Не удалось прочитать</string>
+    <string name="home_weak">Стоит повторить</string>
+    <string name="home_weak_detail">%1$d из последних %2$d ответов — «Снова»</string>
+    <string name="home_weak_action">Повторить тему</string>
+    <string name="home_rhythm">%1$d из последних 7 дней</string>
+    <string name="home_rhythm_caption">Ваш ритм занятий</string>
+
+    <string name="capture_title">Добавить материал</string>
+    <string name="capture_scan">Сканировать страницы</string>
+    <string name="capture_scan_body">Края, перспектива и очистка — прямо на телефоне. До 24 страниц за раз.</string>
+    <string name="capture_photos">Загрузить фото</string>
+    <string name="capture_photos_body">Как есть — только поворот и контраст</string>
+    <string name="capture_paste">Вставить текст</string>
+    <string name="capture_paste_body">Набранный или скопированный текст</string>
+    <string name="capture_pdf">Загрузить PDF</string>
+    <string name="capture_pdf_body">Пока недоступно</string>
+    <string name="capture_originals_kept">Оригиналы фото всегда сохраняются. Ничего не удаляется без вашего решения.</string>
+    <string name="capture_scanner_unavailable">Сканеру нужны сервисы Google Play. Используйте «Загрузить фото».</string>
+
+    <string name="processing_title">Обработка страниц (%1$d)</string>
+    <string name="processing_page_of">Страница %1$d из %2$d</string>
+    <string name="processing_page_failed">Страница %1$d: %2$s</string>
+    <string name="processing_background">Можно уйти с этого экрана. Обработка продолжится в фоне и возобновится, если приложение закроется.</string>
+    <string name="processing_later">Продолжить позже</string>
+    <string name="stage_captured">Снято</string>
+    <string name="stage_captured_body">Страниц: %1$d · оригиналы сохранены</string>
+    <string name="stage_cleaning">Очистка изображения</string>
+    <string name="stage_cleaning_body">Поворот, размер, контраст</string>
+    <string name="stage_reading">Чтение</string>
+    <string name="stage_reading_body">Распознавание текста на телефоне</string>
+    <string name="stage_understanding">Понимание</string>
+    <string name="stage_understanding_body">Заголовки, определения, формулы, списки</string>
+    <string name="stage_organizing">Организация</string>
+    <string name="stage_organizing_body">Подбор предмета и темы</string>
+
+    <string name="check_title">Проверьте текст</string>
+    <string name="check_original_photo">Оригинальное фото</string>
+    <string name="check_read_on_device">Распознано на телефоне</string>
+    <string name="check_uncertain">Не уверены — проверьте</string>
+    <string name="check_show_on_photo">Показать на фото</string>
+    <string name="check_looks_right">Всё верно</string>
+    <string name="check_edited">Исправлено</string>
+    <string name="check_no_text">На этой странице текст не найден. Фото всё равно можно сохранить.</string>
+    <string name="check_no_cyrillic">Распознавание русского текста не установлено в этой сборке, кириллица может читаться с ошибками.</string>
+    <string name="check_uncertain_left">Осталось неясных фрагментов: %1$d. Они останутся помеченными, пока вы их не проверите.</string>
+    <string name="check_save">Сохранить в библиотеку</string>
+    <string name="check_discard">Удалить материал</string>
+    <string name="check_discard_body">Фото и распознанный текст будут удалены с телефона.</string>
+
+    <string name="save_title">Куда сохранить?</string>
+    <string name="save_suggested">Предлагаем: %1$s (найдено: %2$s). Исправьте, если неверно.</string>
+    <string name="save_no_suggestion">Выберите предмет — по тексту определить не удалось.</string>
+    <string name="save_subject">Предмет</string>
+    <string name="save_topic">Тема</string>
+    <string name="save_material_title">Название</string>
+
+    <string name="paste_title">Вставить текст</string>
+    <string name="paste_hint">Вставьте или напечатайте конспект</string>
+    <string name="paste_continue">Продолжить</string>
+
+    <string name="library_search_hint">Поиск по страницам, например «митохондрии»</string>
+    <string name="library_unfinished">Ещё не сохранено</string>
+    <string name="library_subjects">Предметы</string>
+    <string name="library_recent">Недавно добавлено</string>
+    <string name="library_last">последнее: %1$s</string>
+    <string name="library_due">к повтору: %1$d</string>
+    <string name="library_review_n">Повторить (%1$d)</string>
+    <string name="library_empty_title">Библиотека пуста</string>
+    <string name="library_empty_body">Сохранённые материалы появятся здесь, по предметам.</string>
+    <string name="search_none_title">Ничего не найдено</string>
+    <string name="search_none_body">Поиск идёт по тексту сохранённых страниц. Попробуйте слово покороче.</string>
+    <string name="subject_delete">Удалить предмет</string>
+    <string name="subject_delete_body">Все темы, страницы, фото и карточки этого предмета будут удалены с телефона.</string>
+
+    <string name="material_untitled">Материал без названия</string>
+    <string name="material_more">Ещё</string>
+    <string name="material_edit">Исправить текст</string>
+    <string name="material_delete">Удалить материал</string>
+    <string name="material_delete_body">Его фото, текст, конспект и карточки будут удалены с телефона.</string>
+    <string name="material_tab_text">Текст</string>
+    <string name="material_tab_summary">Конспект</string>
+    <string name="material_make_cards">Сделать карточки</string>
+    <string name="material_found_here">Найдено здесь</string>
+    <string name="page_n">Страница %1$d</string>
+    <string name="page_of">Страница %1$d из %2$d</string>
+    <string name="page_short">стр. %1$d</string>
+    <string name="page_typed_text">Набранный текст — без фото</string>
+    <string name="page_delete">Удалить страницу</string>
+    <string name="page_delete_body">Оригинальное фото и его текст будут удалены.</string>
+    <string name="source_exact_text">Точный текст с вашей страницы.</string>
+
+    <string name="summary_engine_note">Собрано на телефоне из предложений ваших страниц. Ничего не переписано и не добавлено — каждый пункт ссылается на свою страницу.</string>
+    <string name="summary_none">Конспекта пока нет.</string>
+    <string name="summary_empty">Недостаточно чёткого текста для конспекта. Сначала проверьте текст.</string>
+    <string name="summary_make">Сделать конспект</string>
+    <string name="summary_working">Готовим…</string>
+    <string name="summary_regenerate">Сделать заново</string>
+    <string name="summary_key_point">Главное</string>
+
+    <string name="block_heading">Заголовок</string>
+    <string name="block_subheading">Подзаголовок</string>
+    <string name="block_paragraph">Текст</string>
+    <string name="block_definition">Определение</string>
+    <string name="block_formula">Формула</string>
+    <string name="block_list">Список</string>
+    <string name="block_table">Таблица</string>
+    <string name="block_example">Пример</string>
+    <string name="block_task">Задание</string>
+    <string name="block_caption">Подпись</string>
+    <string name="block_highlight">Важно</string>
+
+    <string name="cards_title">Предложенные карточки</string>
+    <string name="cards_subtitle">В повторение попадает только то, что вы одобрили</string>
+    <string name="cards_engine_note">Ответы взяты дословно с ваших страниц</string>
+    <string name="cards_front">Вопрос</string>
+    <string name="cards_back">Ответ</string>
+    <string name="cards_source">Источник</string>
+    <string name="cards_approve">Одобрить</string>
+    <string name="cards_discard">Убрать</string>
+    <string name="cards_added">Добавлено</string>
+    <string name="cards_approve_all">Одобрить все</string>
+    <string name="cards_start_review">Повторить сейчас</string>
+    <string name="cards_summary">Добавлено в повторение: %1$d из %2$d</string>
+    <string name="cards_none_title">Карточки не найдены</string>
+    <string name="cards_none_body">Карточки строятся из определений, формул и списков на ваших страницах. В этом материале их может не быть.</string>
+
+    <string name="review_show_answer">Показать ответ</string>
+    <string name="review_source">Открыть страницу</string>
+    <string name="review_fsrs_note">Время следующего повтора рассчитывает алгоритм FSRS по вашим ответам.</string>
+    <string name="review_none_title">Сейчас повторять нечего</string>
+    <string name="review_none_body">Карточки вернутся, когда придёт время. Чтобы начать, одобрите карточки из материала.</string>
+    <string name="review_done_title">На сегодня всё</string>
+    <string name="review_done_body">Повторено карточек: %1$d.</string>
+    <string name="review_done_again">Повторено карточек: %1$d. Скоро вернутся: %2$d.</string>
+    <string name="rating_again">Снова</string>
+    <string name="rating_hard">Трудно</string>
+    <string name="rating_good">Хорошо</string>
+    <string name="rating_easy">Легко</string>
+
+    <string name="profile_title">Профиль</string>
+    <string name="profile_offline_title">Приватно и офлайн</string>
+    <string name="profile_offline_body">Распознавание, конспекты и карточки работают на телефоне. У этой версии нет доступа в интернет и нет аккаунта.</string>
+    <string name="profile_recognition">Распознавание текста</string>
+    <string name="profile_cyrillic">Русский текст (кириллица)</string>
+    <string name="profile_cyrillic_body">Дополнительно читает страницы через Tesseract. Медленнее, нужно для кириллицы.</string>
+    <string name="profile_theme">Тема</string>
+    <string name="theme_system">Системная</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="profile_storage">Хранилище</string>
+    <string name="profile_storage_body">Оригиналов фото: %1$d · %2$s. Хранятся, пока вы их не удалите.</string>
+    <string name="profile_delete">Удаление данных</string>
+    <string name="profile_delete_generated">Удалить сгенерированное</string>
+    <string name="profile_delete_generated_body">Будут удалены конспекты и неодобренные карточки. Страницы и одобренные карточки останутся.</string>
+    <string name="profile_delete_all">Удалить всё</string>
+    <string name="profile_delete_all_body">Все страницы, фото, карточки, история повторений и настройки будут удалены с телефона. Это нельзя отменить.</string>
+    <string name="profile_delete_hint">Чтобы удалить одну страницу или предмет, откройте их в библиотеке.</string>
+    <string name="profile_deleted">Удалено</string>
+    <string name="profile_about">StudyCapture 0.1 · компоненты: ML Kit, Tesseract, FSRS. Лицензии — в README.</string>
+
+    <string name="subject_mathematics">Математика</string>
+    <string name="subject_physics">Физика</string>
+    <string name="subject_chemistry">Химия</string>
+    <string name="subject_biology">Биология</string>
+    <string name="subject_history">История</string>
+    <string name="subject_geography">География</string>
+    <string name="subject_literature">Литература</string>
+    <string name="subject_english">Английский язык</string>
+    <string name="subject_russian">Русский язык</string>
+    <string name="subject_cs">Информатика</string>
+    <string name="subject_social">Обществознание</string>
+
+    <plurals name="pages">
+        <item quantity="one">%1$d страница</item>
+        <item quantity="few">%1$d страницы</item>
+        <item quantity="many">%1$d страниц</item>
+        <item quantity="other">%1$d страницы</item>
+    </plurals>
+    <plurals name="materials">
+        <item quantity="one">%1$d материал</item>
+        <item quantity="few">%1$d материала</item>
+        <item quantity="many">%1$d материалов</item>
+        <item quantity="other">%1$d материала</item>
+    </plurals>
+    <plurals name="reviews_due">
+        <item quantity="one">карточка к повторению</item>
+        <item quantity="few">карточки к повторению</item>
+        <item quantity="many">карточек к повторению</item>
+        <item quantity="other">карточки к повторению</item>
+    </plurals>
+    <plurals name="search_results">
+        <item quantity="one">%1$d совпадение</item>
+        <item quantity="few">%1$d совпадения</item>
+        <item quantity="many">%1$d совпадений</item>
+        <item quantity="other">%1$d совпадения</item>
+    </plurals>
+</resources>

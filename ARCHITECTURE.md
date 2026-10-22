@@ -1,0 +1,105 @@
+# Архитектура StudyCapture
+
+Главный сценарий: **Capture → Understand → Organize → Learn → Review**.
+Версия 0.1 работает полностью на устройстве и не имеет доступа в интернет.
+
+## Модули
+
+```
+StudyCapture/
+├─ app/                    Android: UI (Compose), данные (Room), OCR, фоновая обработка
+├─ core/model/             чистый Kotlin: OcrLine, TextBlock, BlockType, SourceRef, Provenance
+├─ core/srs/               чистый Kotlin: FSRS-6 (порт py-fsrs 6.3.2) + эталонные тесты
+├─ core/understanding/     чистый Kotlin: язык, структура, конспект, карточки, предмет, поиск
+├─ tools/jvm-check/        сборка только core-модулей (без Android SDK)
+└─ docs/adr/               архитектурные решения
+```
+
+Модули `core/*` не зависят от Android. Их же будет использовать Windows-версия (Compose Desktop / KMP).
+
+### Пакеты `app`
+
+| Пакет | Ответственность |
+|---|---|
+| `data/db` | Room: сущности, DAO, FTS4-индекс по тексту блоков |
+| `data/files` | `PageFileStore` — оригиналы и обработанные фото в приватной папке |
+| `data/repo` | репозитории: импорт, библиотека и поиск, конспекты/карточки/повторение, приватность |
+| `data/settings` | DataStore: кириллица, тема |
+| `ocr` | `OcrEngine` (интерфейс), `MlKitLatinOcr`, `TesseractOcr`, `OcrRouter` |
+| `processing` | `MaterialProcessor` (стадии), `ImagePreparer`, `ProcessMaterialWorker` (WorkManager) |
+| `ai` | `StudyAssistant` (интерфейс провайдера) и `OnDeviceStudyAssistant` |
+| `ui/*` | экраны по фичам: home, capture, processing, check, library, material, cards, review, profile |
+
+## Поток данных
+
+1. **Capture.** `CaptureSheet` запускает ML Kit Document Scanner (края, перспектива, очистка) или Photo Picker.
+   `CaptureRepository.importImages` сразу копирует файлы в приватную папку (оригинал сохраняется навсегда),
+   создаёт `Material` + `Page(stage = CAPTURED)` и ставит задачу в WorkManager.
+2. **Обработка.** `MaterialProcessor` для каждой страницы записывает стадию в Room до начала работы:
+   `CLEANING` (декодирование с учётом EXIF, уменьшение до 2400 px, растяжение контраста) →
+   `READING` (OCR через `OcrRouter`) → `UNDERSTANDING` (`StructureAnalyzer` → типизированные блоки) → `READY`.
+   После всех страниц — «Organizing»: подсказка предмета/темы/названия, статус `NEEDS_REVIEW`.
+   Экран прогресса читает только эти стадии — фальшивого прогресса нет. Если процесс убит, WorkManager
+   перезапускает задачу, и обработка продолжается с первой незавершённой страницы.
+3. **Проверка.** `CheckTextScreen`: фото рядом с текстом, рамка на фото для выбранного блока,
+   сомнительные блоки (низкая уверенность OCR) подсвечены и не исправляются автоматически.
+   Пользователь выбирает или подтверждает предмет → тема → название и сохраняет (`READY`).
+4. **Библиотека и поиск.** Предметы → темы → материалы. Поиск через FTS4 (`unicode61`, работает
+   с кириллицей); запрос «где у меня было про митохондрии?» превращается в `митохондри*`
+   (`SearchQueryParser`), сначала AND, потом OR.
+5. **Конспект и карточки.** `OnDeviceStudyAssistant` строит извлекающий конспект и предлагает карточки.
+   Каждый пункт и карточка хранят `pageId + blockIndex`; нажатие открывает фото с рамкой и точный текст.
+   Карточки попадают в повторение только после одобрения.
+6. **Повторение.** FSRS-6: Again/Hard/Good/Easy с предпросмотром интервалов. Сохраняется ровно тот
+   вариант, что был показан на кнопке. История ответов — в `review_logs`.
+
+## Провайдеры AI
+
+```kotlin
+interface OcrEngine { suspend fun recognize(bitmap: Bitmap): List<OcrLine> }
+interface StudyAssistant {
+    val engine: EngineInfo            // onDevice, requiresNetwork, extractiveOnly
+    suspend fun summarize(pages: List<PageText>): Summary
+    suspend fun suggestFlashcards(pages: List<PageText>): List<CardSuggestion>
+    suspend fun suggestSubject(text: String, history: List<LabeledText>): SubjectSuggestion?
+}
+```
+
+Замена провайдера — одна строка в `AppContainer`. Будущие провайдеры (локальная LLM, облако через шлюз)
+обязаны помечать сгенерированный текст `Provenance.AI_EXPLANATION` / `AI_EXTRA`, а UI — показывать эти метки.
+Ключи API никогда не попадают в APK: облачные модели — только через собственный сервер-шлюз (фаза 2+).
+
+## Приватность
+
+- В манифесте **удалены** `INTERNET` и `ACCESS_NETWORK_STATE` (даже если их просит библиотека).
+- `allowBackup=false` и правила `data_extraction_rules.xml` исключают заметки из облачного бэкапа.
+- Удаление: страница, материал, предмет (с файлами), «сгенерированные данные», «удалить всё».
+  Аккаунта и облака в v0.1 нет, поэтому «удалить всё» удаляет данные полностью.
+
+## Готовность к синхронизации
+
+UUID-идентификаторы, `createdAt/updatedAt` во всех таблицах, каскадные связи. Для синхронизации
+дальше понадобятся мягкое удаление (tombstones) и журнал изменений — см. ROADMAP.
+
+## Зависимости
+
+| Библиотека | Версия | Лицензия | Зачем |
+|---|---|---|---|
+| Android Gradle Plugin | 9.4.0 | Apache-2.0 | сборка; встроенная поддержка Kotlin |
+| Kotlin | 2.4.10 | Apache-2.0 | язык, Compose compiler, serialization |
+| KSP | 2.3.12 | Apache-2.0 | кодогенерация Room |
+| Compose BOM | 2026.09.00 (Material 3 1.4) | Apache-2.0 | UI |
+| Activity / Lifecycle / Navigation | 1.13.0 / 2.11.0 / 2.10.2 | Apache-2.0 | Compose-интеграция, типизированные маршруты |
+| Room | 2.8.5 | Apache-2.0 | база + FTS4 |
+| WorkManager | 2.12.0 | Apache-2.0 | обработка, переживающая закрытие приложения |
+| DataStore | 1.3.0 | Apache-2.0 | настройки |
+| Coil | 3.6.1 | Apache-2.0 | показ больших фото с даунсэмплингом |
+| kotlinx.coroutines / serialization | 1.11.0 / 1.12.0 | Apache-2.0 | асинхронность, JSON конспектов |
+| ML Kit Text Recognition | 16.0.1 | ML Kit Terms (бесплатно, не open source) | OCR латиницы на устройстве |
+| ML Kit Document Scanner | 16.0.0 | ML Kit Terms | края, перспектива, очистка |
+| Tesseract4Android | 4.9.0 (JitPack) | Apache-2.0 | OCR кириллицы на устройстве |
+| tessdata_fast rus/eng | main | Apache-2.0 | языковые данные Tesseract (в assets) |
+| FSRS | порт py-fsrs 6.3.2 | MIT | алгоритм интервального повторения |
+
+Версии проверены по официальным страницам релизов (developer.android.com, Maven Central, README Tesseract4Android)
+на 22.10.2026.

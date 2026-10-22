@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StudyCapture</string>
+
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_close">Close</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_save">Save</string>
+    <string name="action_undo">Undo</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_library">Library</string>
+    <string name="nav_capture">Capture</string>
+    <string name="nav_review">Review</string>
+    <string name="nav_profile">Profile</string>
+
+    <string name="engine_on_device">On this phone</string>
+
+    <string name="first_run_title">Turn your notes into a study library</string>
+    <string name="first_run_body">Photograph a board, a notebook or a textbook page. StudyCapture reads it, files it by subject and helps you review.</string>
+    <string name="first_run_step1">Capture or import a page</string>
+    <string name="first_run_step2">Check the recognized text next to your photo</string>
+    <string name="first_run_step3">Review with flashcards made from your pages</string>
+    <string name="first_run_privacy">Everything stays on this phone. StudyCapture has no internet access.</string>
+
+    <string name="home_today">Today</string>
+    <string name="home_start_review">Start review</string>
+    <string name="home_no_reviews">No reviews due</string>
+    <string name="home_no_reviews_body">Approve flashcards from a material and they will show up here when it is time.</string>
+    <string name="home_continue">Continue</string>
+    <string name="home_recent">Recent</string>
+    <string name="home_processing">Processing…</string>
+    <string name="home_needs_check">Ready to check</string>
+    <string name="home_failed">Could not be read</string>
+    <string name="home_weak">Worth another look</string>
+    <string name="home_weak_detail">%1$d of your last %2$d answers were “Again”</string>
+    <string name="home_weak_action">Review this topic</string>
+    <string name="home_rhythm">%1$d of the last 7 days</string>
+    <string name="home_rhythm_caption">Your study rhythm</string>
+
+    <string name="capture_title">Add material</string>
+    <string name="capture_scan">Scan pages</string>
+    <string name="capture_scan_body">Edges, perspective and cleanup run on this phone. Up to 24 pages at once.</string>
+    <string name="capture_photos">Import photos</string>
+    <string name="capture_photos_body">Used as they are — rotation and contrast only</string>
+    <string name="capture_paste">Paste text</string>
+    <string name="capture_paste_body">Typed notes or copied text</string>
+    <string name="capture_pdf">Import PDF</string>
+    <string name="capture_pdf_body">Not available yet</string>
+    <string name="capture_originals_kept">Original photos are always kept. Nothing is deleted unless you choose to.</string>
+    <string name="capture_scanner_unavailable">The scanner needs Google Play services. Use Import photos instead.</string>
+
+    <string name="processing_title">Processing pages (%1$d)</string>
+    <string name="processing_page_of">Page %1$d of %2$d</string>
+    <string name="processing_page_failed">Page %1$d: %2$s</string>
+    <string name="processing_background">You can leave this screen. Processing continues in the background and resumes if the app closes.</string>
+    <string name="processing_later">Continue later</string>
+    <string name="stage_captured">Captured</string>
+    <string name="stage_captured_body">Pages: %1$d · originals saved</string>
+    <string name="stage_cleaning">Cleaning image</string>
+    <string name="stage_cleaning_body">Rotation, size, contrast</string>
+    <string name="stage_reading">Reading</string>
+    <string name="stage_reading_body">Text recognition on this phone</string>
+    <string name="stage_understanding">Understanding</string>
+    <string name="stage_understanding_body">Headings, definitions, formulas, lists</string>
+    <string name="stage_organizing">Organizing</string>
+    <string name="stage_organizing_body">Suggest subject and topic</string>
+
+    <string name="check_title">Check the text</string>
+    <string name="check_original_photo">Original photo</string>
+    <string name="check_read_on_device">Read on this phone</string>
+    <string name="check_uncertain">Not sure — please check</string>
+    <string name="check_show_on_photo">Show on photo</string>
+    <string name="check_looks_right">Looks right</string>
+    <string name="check_edited">Edited</string>
+    <string name="check_no_text">No text was found on this page. You can still keep the photo.</string>
+    <string name="check_no_cyrillic">Russian text recognition is not installed in this build, so Cyrillic may be misread.</string>
+    <string name="check_uncertain_left">%1$d unclear fragments left. They stay marked as unclear until you check them.</string>
+    <string name="check_save">Save to library</string>
+    <string name="check_discard">Delete this material</string>
+    <string name="check_discard_body">The photos and recognized text will be deleted from this phone.</string>
+
+    <string name="save_title">Where does it belong?</string>
+    <string name="save_suggested">Suggested: %1$s (found: %2$s). Change it if it is wrong.</string>
+    <string name="save_no_suggestion">Choose a subject — the app could not tell from the text.</string>
+    <string name="save_subject">Subject</string>
+    <string name="save_topic">Topic</string>
+    <string name="save_material_title">Title</string>
+
+    <string name="paste_title">Paste text</string>
+    <string name="paste_hint">Paste or type your notes here</string>
+    <string name="paste_continue">Continue</string>
+
+    <string name="library_search_hint">Search your pages, e.g. mitochondria</string>
+    <string name="library_unfinished">Not saved yet</string>
+    <string name="library_subjects">Subjects</string>
+    <string name="library_recent">Recently added</string>
+    <string name="library_last">last: %1$s</string>
+    <string name="library_due">%1$d due</string>
+    <string name="library_review_n">Review %1$d</string>
+    <string name="library_empty_title">Your library is empty</string>
+    <string name="library_empty_body">Saved materials appear here, grouped by subject.</string>
+    <string name="search_none_title">Nothing found</string>
+    <string name="search_none_body">Search looks through the text of saved pages. Try a shorter word.</string>
+    <string name="subject_delete">Delete subject</string>
+    <string name="subject_delete_body">All topics, pages, photos and flashcards in this subject will be deleted from this phone.</string>
+
+    <string name="material_untitled">Untitled material</string>
+    <string name="material_more">More options</string>
+    <string name="material_edit">Edit text</string>
+    <string name="material_delete">Delete material</string>
+    <string name="material_delete_body">Its photos, text, summary and flashcards will be deleted from this phone.</string>
+    <string name="material_tab_text">Text</string>
+    <string name="material_tab_summary">Summary</string>
+    <string name="material_make_cards">Make flashcards</string>
+    <string name="material_found_here">Found here</string>
+    <string name="page_n">Page %1$d</string>
+    <string name="page_of">Page %1$d of %2$d</string>
+    <string name="page_short">p.%1$d</string>
+    <string name="page_typed_text">Typed text — no photo</string>
+    <string name="page_delete">Delete page</string>
+    <string name="page_delete_body">The original photo and its text will be deleted.</string>
+    <string name="source_exact_text">Exact text from your page.</string>
+
+    <string name="summary_engine_note">Built on this phone by picking sentences from your pages. Nothing is rewritten or added — every point links to its page.</string>
+    <string name="summary_none">No summary yet.</string>
+    <string name="summary_empty">There was not enough clear text to summarize. Check the text first.</string>
+    <string name="summary_make">Make summary</string>
+    <string name="summary_working">Working…</string>
+    <string name="summary_regenerate">Make again</string>
+    <string name="summary_key_point">Key point</string>
+
+    <string name="block_heading">Heading</string>
+    <string name="block_subheading">Subheading</string>
+    <string name="block_paragraph">Text</string>
+    <string name="block_definition">Definition</string>
+    <string name="block_formula">Formula</string>
+    <string name="block_list">List</string>
+    <string name="block_table">Table</string>
+    <string name="block_example">Example</string>
+    <string name="block_task">Task</string>
+    <string name="block_caption">Caption</string>
+    <string name="block_highlight">Important</string>
+
+    <string name="cards_title">Suggested flashcards</string>
+    <string name="cards_subtitle">Nothing is added to Review until you approve it</string>
+    <string name="cards_engine_note">Answers are taken word for word from your pages</string>
+    <string name="cards_front">Front</string>
+    <string name="cards_back">Back</string>
+    <string name="cards_source">Source</string>
+    <string name="cards_approve">Approve</string>
+    <string name="cards_discard">Discard</string>
+    <string name="cards_added">Added</string>
+    <string name="cards_approve_all">Approve all</string>
+    <string name="cards_start_review">Review now</string>
+    <string name="cards_summary">%1$d of %2$d added to review</string>
+    <string name="cards_none_title">No flashcards found</string>
+    <string name="cards_none_body">Cards come from definitions, formulas and lists in your pages. This material may not have clear ones.</string>
+
+    <string name="review_show_answer">Show answer</string>
+    <string name="review_source">Open page</string>
+    <string name="review_fsrs_note">Next review times come from the FSRS algorithm and your answers.</string>
+    <string name="review_none_title">Nothing to review right now</string>
+    <string name="review_none_body">Cards come back when they are due. Approve flashcards from a material to start.</string>
+    <string name="review_done_title">Done for now</string>
+    <string name="review_done_body">%1$d cards reviewed.</string>
+    <string name="review_done_again">%1$d cards reviewed. %2$d will come back soon.</string>
+    <string name="rating_again">Again</string>
+    <string name="rating_hard">Hard</string>
+    <string name="rating_good">Good</string>
+    <string name="rating_easy">Easy</string>
+
+    <string name="profile_title">Profile</string>
+    <string name="profile_offline_title">Private and offline</string>
+    <string name="profile_offline_body">Recognition, summaries and flashcards run on this phone. This version has no internet access and no account.</string>
+    <string name="profile_recognition">Text recognition</string>
+    <string name="profile_cyrillic">Russian (Cyrillic) text</string>
+    <string name="profile_cyrillic_body">Also reads pages with Tesseract. Slower, needed for Cyrillic.</string>
+    <string name="profile_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="profile_storage">Storage</string>
+    <string name="profile_storage_body">%1$d original photos · %2$s. Kept until you delete them.</string>
+    <string name="profile_delete">Delete data</string>
+    <string name="profile_delete_generated">Delete generated data</string>
+    <string name="profile_delete_generated_body">Summaries and unapproved flashcard suggestions will be deleted. Pages and approved cards stay.</string>
+    <string name="profile_delete_all">Delete everything</string>
+    <string name="profile_delete_all_body">All pages, photos, flashcards, review history and settings will be deleted from this phone. This cannot be undone.</string>
+    <string name="profile_delete_hint">To delete one page or one subject, open it in Library.</string>
+    <string name="profile_deleted">Deleted</string>
+    <string name="profile_about">StudyCapture 0.1 · open-source components: ML Kit, Tesseract, FSRS. See the README for licenses.</string>
+
+    <string name="subject_mathematics">Mathematics</string>
+    <string name="subject_physics">Physics</string>
+    <string name="subject_chemistry">Chemistry</string>
+    <string name="subject_biology">Biology</string>
+    <string name="subject_history">History</string>
+    <string name="subject_geography">Geography</string>
+    <string name="subject_literature">Literature</string>
+    <string name="subject_english">English</string>
+    <string name="subject_russian">Russian</string>
+    <string name="subject_cs">Computer Science</string>
+    <string name="subject_social">Social Studies</string>
+
+    <plurals name="pages">
+        <item quantity="one">%1$d page</item>
+        <item quantity="other">%1$d pages</item>
+    </plurals>
+    <plurals name="materials">
+        <item quantity="one">%1$d material</item>
+        <item quantity="other">%1$d materials</item>
+    </plurals>
+    <plurals name="reviews_due">
+        <item quantity="one">review due</item>
+        <item quantity="other">reviews due</item>
+    </plurals>
+    <plurals name="search_results">
+        <item quantity="one">%1$d match</item>
+        <item quantity="other">%1$d matches</item>
+    </plurals>
+</resources>
