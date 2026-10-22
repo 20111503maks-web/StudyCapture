@@ -2,7 +2,7 @@
 # license and the reason in ARCHITECTURE.md ("Dependencies" section).
 [versions]
 agp = "9.4.0"
-kotlin = "2.4.10"
+kotlin = "2.4.21"
 ksp = "2.3.12"
 coroutines = "1.11.0"
 serialization = "1.12.0"
