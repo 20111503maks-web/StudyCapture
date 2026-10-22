@@ -48,7 +48,7 @@ jobs:
           fi
 
       - name: Upload APK (debug build, for testers)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: StudyCapture-debug-apk
           path: app/build/outputs/apk/debug/*.apk
