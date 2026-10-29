@@ -1,7 +1,7 @@
 # Every dependency version lives here. Before adding a library, record its
 # license and the reason in ARCHITECTURE.md ("Dependencies" section).
 [versions]
-agp = "9.4.0"
+agp = "9.5.0"
 kotlin = "2.4.10"
 ksp = "2.3.12"
 coroutines = "1.11.0"
